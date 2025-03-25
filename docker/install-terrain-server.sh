@@ -12,7 +12,7 @@ if [ ! -f $archive ]; then
 fi
 
 # Set up the source directory
-CTS_DIR=/usr/local/go/src/github.com/geo-data/cesium-terrain-server
+CTS_DIR=/usr/local/go/src/github.com/geo-data/service
 mkdir -p $CTS_DIR || exit 1
 cd $CTS_DIR || exit 1
 

@@ -11,7 +11,7 @@ Cesium.js web applications.
 
 ```sh
 docker run -p 8080:8000 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
-    geodata/cesium-terrain-server 
+    geodata/service 
 ```
 
 Note that if the `/data/tilesets/terrain` directory is not present on the
@@ -88,7 +88,7 @@ instructions above:
 
 ```sh
 docker run -p 8080:80 -v /data/docker/tilesets/terrain:/data/tilesets/terrain \
-    geodata/cesium-terrain-server 
+    geodata/service 
 ```
 
 The terrain data should now be visible at <http://localhost:8080/>.
@@ -118,7 +118,7 @@ docker run --name memcache -d memcached
 This can then be used by a terrain server image:
 
 ```sh
-docker run --name terrain -d --link memcache:memcached geodata/cesium-terrain-server
+docker run --name terrain -d --link memcache:memcached geodata/service
 ```
 
 ### `MEMCACHED` Environment variable
@@ -127,7 +127,7 @@ A memcached server that is not linked can be still used by setting the container
 `MEMCACHED` environment variable to point to the memcached network address e.g.
 
 ```sh
-docker run --name terrain -d --env MEMCACHED=memcache.me.org:11211 geodata/cesium-terrain-server
+docker run --name terrain -d --env MEMCACHED=memcache.me.org:11211 geodata/service
 ```
 
 Linking takes precedence over setting `MEMCACHED`.

@@ -3,10 +3,10 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/assets"
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
+	"github.com/pinkey-ltd/cesium-terrain-server/assets"
+	"github.com/pinkey-ltd/cesium-terrain-server/stores"
+	"log/slog"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ func TerrainHandler(store stores.Storer) func(http.ResponseWriter, *http.Request
 		defer func() {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Err(err.Error())
+				slog.Error(err.Error())
 			}
 		}()
 

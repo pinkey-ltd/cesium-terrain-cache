@@ -2,9 +2,9 @@ package fs
 
 import (
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
+	"github.com/pinkey-ltd/cesium-terrain-server/stores"
 	"io/ioutil"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -24,13 +24,13 @@ func (this *Store) readFile(filename string) (body []byte, err error) {
 	body, err = ioutil.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Debug(fmt.Sprintf("file store: not found: %s", filename))
+			slog.Debug(fmt.Sprintf("file store: not found: %s", filename))
 			err = stores.ErrNoItem
 		}
 		return
 	}
 
-	log.Debug(fmt.Sprintf("file store: load: %s", filename))
+	slog.Debug(fmt.Sprintf("file store: load: %s", filename))
 	return
 }
 

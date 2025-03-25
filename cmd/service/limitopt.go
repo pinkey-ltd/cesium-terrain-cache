@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/handlers"
+	"github.com/pinkey-ltd/cesium-terrain-server/handlers"
+	"log/slog"
 	"strconv"
 )
 
-// Adapted from <https://golang.org/doc/effective_go.html#constants>.
+// ByteSize Adapted from <https://golang.org/doc/effective_go.html#constants>.
 type ByteSize float64
 
 const (
@@ -16,10 +17,22 @@ const (
 	MB
 	GB
 	TB
+	PB
+	EB
+	ZB
+	YB
 )
 
 func (b ByteSize) String() string {
 	switch {
+	case b >= YB:
+		return fmt.Sprintf("%.2fYB", b/YB)
+	case b >= ZB:
+		return fmt.Sprintf("%.2fZB", b/ZB)
+	case b >= EB:
+		return fmt.Sprintf("%.2fEB", b/EB)
+	case b >= PB:
+		return fmt.Sprintf("%.2fPB", b/PB)
 	case b >= TB:
 		return fmt.Sprintf("%.2fTB", b/TB)
 	case b >= GB:
@@ -27,7 +40,7 @@ func (b ByteSize) String() string {
 	case b >= MB:
 		return fmt.Sprintf("%.2fMB", b/MB)
 	case b >= KB:
-		return fmt.Sprintf("%.2fkB", b/KB)
+		return fmt.Sprintf("%.2fKB", b/KB)
 	}
 	return fmt.Sprintf("%.2fB", b)
 }
@@ -58,6 +71,14 @@ func ParseByteSize(size string) (bytes ByteSize, err error) {
 
 	suffix := size[len(size)-2:]
 	switch suffix {
+	case "YB":
+		bytes *= YB
+	case "ZB":
+		bytes *= ZB
+	case "EB":
+		bytes *= EB
+	case "PB":
+		bytes *= PB
 	case "TB":
 		bytes *= TB
 	case "GB":
@@ -68,6 +89,7 @@ func ParseByteSize(size string) (bytes ByteSize, err error) {
 		bytes *= KB
 	default:
 		err = errors.New("bad size suffix: " + suffix)
+		slog.Error(err.Error())
 	}
 	return
 }

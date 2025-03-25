@@ -22,15 +22,12 @@ The terrain server is a self contained binary with the following command line
 options:
 
 ```sh
-$ cesium-terrain-server:
+$ service:
   -base-terrain-url="/tilesets": base url prefix under which all tilesets are served
   -cache-limit=1.00MB: the memory size in bytes beyond which resources are not cached. Other memory units can be specified by suffixing the number with kB, MB, GB or TB
   -dir=".": the root directory under which tileset directories reside
-  -log-level=notice: level at which logging occurs. One of crit, err, notice, debug
-  -memcached="": (optional) memcached connection string for caching tiles e.g. localhost:11211
-  -no-request-log=false: do not log client requests for resources
+  -cacheable: (optional) enable caching tiles
   -port=8000: the port on which the server listens
-  -web-dir="": (optional) the root directory containing static files to be served
 ```
 
 Assume you have the following (small) terrain tileset (possibly created with
@@ -55,7 +52,7 @@ Assume you have the following (small) terrain tileset (possibly created with
 To serve this tileset on port `8080`, you would run the following command:
 
 ```sh
-cesium-terrain-server -dir /data/tilesets/terrain -port 8080
+service -dir /data/tilesets/terrain -port 8080
 ```
 
 The tiles would then be available under <http://localhost:8080/tilesets/srtm/>
@@ -92,57 +89,6 @@ terrain dataset intersects with the prime meridian.  The terrain server
 addresses this issue by serving up a blank terrain tile if a top level tile is
 requested which does not also exist on the filesystem.
 
-### Caching tiles with Memcached
-
-The terrain server can use a memcache server to cache tileset data. It is
-important to note that the terrain server does not use the cache itself, it only
-populates it for each request.  The idea is that a reverse proxy attached to the
-memcache (such as Nginx) will first attempt to fulfil a request from the cache
-before falling back to the terrain server, which will then update the cache.
-
-Enabling this functionality requires specifying the network address of a
-memcached server (including the port) using the `-memcached` option.  E.g. A
-memcached server running at `memcache.me.org` on port `11211` can be used as
-follows:
-
-```sh
-cesium-terrain-server -dir /data/tilesets/terrain -memcached memcache.me.org:11211
-```
-
-If present, the terrain server uses the value of the custom `X-Memcache-Key`
-header as the memcache key, otherwise it uses the value of the request URI.  A
-minimal Nginx configuration setting `X-Memcache-Key` is as follows:
-
-```
-server {
-    listen 80;
-
-    server_name localhost;
-
-    root /var/www/app;
-    index index.html;
-
-    location /tilesets/ {
-        set            $memcached_key "tiles$request_uri";
-        memcached_pass memcached:11211;
-        error_page     404 502 504 = @fallback;
-        add_header Access-Control-Allow-Origin "*";
-
-        location ~* \.terrain$ {
-            add_header Content-Encoding gzip;
-        }
-    }
-
-    location @fallback {
-        proxy_pass     http://tiles:8000;
-        proxy_set_header X-Memcache-Key $memcached_key;
-    }
-}
-```
-
-The `-cache-limit` option can be used in conjunction with the above to change
-the memory limit at which resources are considered to large for the cache.
-
 ## Installation
 
 The server is written in [Go](http://golang.org/) and requires Go to be present
@@ -152,7 +98,7 @@ that Go does.  Assuming that you have set the
 installation is a matter of running `go install`:
 
 ```sh
-go get github.com/geo-data/cesium-terrain-server/cmd/cesium-terrain-server
+go get github.com/geo-data/service/cmd/service
 ```
 
 A program called `cesium-terrain-server` should then be available under your
@@ -180,6 +126,3 @@ requests or patches.
 
 The [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-## Contact
-
-Homme Zwaagstra <hrz@geodata.soton.ac.uk>

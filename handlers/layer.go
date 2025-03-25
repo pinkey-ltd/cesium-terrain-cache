@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/geo-data/cesium-terrain-server/log"
-	"github.com/geo-data/cesium-terrain-server/stores"
 	"github.com/gorilla/mux"
+	"github.com/pinkey-ltd/cesium-terrain-server/stores"
+	"log/slog"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func LayerHandler(store stores.Storer) func(http.ResponseWriter, *http.Request) 
 		defer func() {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Err(err.Error())
+				slog.Error(err.Error())
 			}
 		}()
 

@@ -2,3 +2,7 @@ bin
 pkg
 src/github.com
 .go-bindata
+
+# IDE
+.idea/
+.vscode/

@@ -6,3 +6,6 @@ src/github.com
 # IDE
 .idea/
 .vscode/
+
+# nkey
+cmd/seed.txt

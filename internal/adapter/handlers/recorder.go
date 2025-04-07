@@ -10,6 +10,7 @@ package handlers
 
 import (
 	"bytes"
+	"log/slog"
 	"net/http"
 )
 
@@ -24,48 +25,10 @@ type ResponseRecorder struct {
 	wroteHeader bool
 }
 
-// NewRecorder returns an initialized ResponseRecorder.
-func NewRecorder() *ResponseRecorder {
-	return &ResponseRecorder{
-		HeaderMap: make(http.Header),
-		Body:      new(bytes.Buffer),
-		Code:      200,
-	}
-}
-
-// Header returns the response headers.
-func (rw *ResponseRecorder) Header() http.Header {
-	m := rw.HeaderMap
-	if m == nil {
-		m = make(http.Header)
-		rw.HeaderMap = m
-	}
-	return m
-}
-
-// Write always succeeds and writes to rw.Body, if not nil.
-func (rw *ResponseRecorder) Write(buf []byte) (int, error) {
-	if !rw.wroteHeader {
-		rw.WriteHeader(200)
-	}
-	if rw.Body != nil {
-		rw.Body.Write(buf)
-	}
-	return len(buf), nil
-}
-
-// WriteHeader sets rw.Code.
-func (rw *ResponseRecorder) WriteHeader(code int) {
-	if !rw.wroteHeader {
-		rw.Code = code
-	}
-	rw.wroteHeader = true
-}
-
 // Flush sets rw.Flushed to true.
 func (rw *ResponseRecorder) Flush() {
 	if !rw.wroteHeader {
-		rw.WriteHeader(200)
+		slog.Error("Flush called before WriteHeader")
 	}
 	rw.Flushed = true
 }

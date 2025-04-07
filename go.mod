@@ -1,4 +1,4 @@
-module github.com/pinkey-ltd/cesium-terrain-server
+module github.com/pinkey-ltd/cesium-terrain-cache
 
 go 1.24.1
 

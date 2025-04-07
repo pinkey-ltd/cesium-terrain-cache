@@ -1,10 +1,10 @@
-package stores
+package repository
 
 import (
 	"strconv"
 )
 
-// Representation of a terrain tile. This includes the x, y, z coordinate and
+// Terrain Representation of a terrain tile. This includes the x, y, z coordinate and
 // the byte sequence of the tile itself. Note that terrain tiles are gzipped.
 type Terrain struct {
 	value   []byte
@@ -12,25 +12,25 @@ type Terrain struct {
 }
 
 // MarshalBinary implements the encoding.MarshalBinary interface.
-func (this *Terrain) MarshalBinary() ([]byte, error) {
-	return this.value, nil
+func (t *Terrain) MarshalBinary() ([]byte, error) {
+	return t.value, nil
 }
 
 // UnmarshalBinary implements the encoding.UnmarshalBinary interface.
-func (this *Terrain) UnmarshalBinary(data []byte) error {
-	this.value = data
+func (t *Terrain) UnmarshalBinary(data []byte) error {
+	t.value = data
 	return nil
 }
 
 // IsRoot returns true if the tile represents a root tile.
-func (self *Terrain) IsRoot() bool {
-	return self.Z == 0 &&
-		(self.X == 0 || self.X == 1) &&
-		self.Y == 0
+func (t *Terrain) IsRoot() bool {
+	return t.Z == 0 &&
+		(t.X == 0 || t.X == 1) &&
+		t.Y == 0
 }
 
-// Parse x, y, z string coordinates and assign them to the Terrain
-func (self *Terrain) ParseCoord(x, y, z string) error {
+// ParseCoord Parse x, y, z string coordinates and assign them to the Terrain
+func (t *Terrain) ParseCoord(x, y, z, version string) error {
 	xi, err := strconv.ParseUint(x, 10, 64)
 	if err != nil {
 		return err
@@ -46,9 +46,9 @@ func (self *Terrain) ParseCoord(x, y, z string) error {
 		return err
 	}
 
-	self.X = xi
-	self.Y = yi
-	self.Z = zi
+	t.X = xi
+	t.Y = yi
+	t.Z = zi
 
 	return nil
 }

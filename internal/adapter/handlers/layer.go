@@ -1,17 +1,17 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/pinkey-ltd/cesium-terrain-cache/assets"
-	"github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/repository"
+	"github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/store"
 	"log/slog"
 	"net/http"
 )
 
 // LayerHandler An HTTP handler which returns a tileset's `layer.json` file
-func LayerHandler(store *repository.Store) func(http.ResponseWriter, *http.Request) {
+func LayerHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			err   error
@@ -27,11 +27,11 @@ func LayerHandler(store *repository.Store) func(http.ResponseWriter, *http.Reque
 
 		vars := mux.Vars(r)
 
-		// Try and get a `layer.json` from the repository
+		// Try and get a `layer.json` from the store
 		layer, err = store.Layer(vars["tileset"])
-		if err == repository.ErrNoItem {
+		if err == store.ErrNoItem {
 			err = nil // don't persist this error
-			if store.TilesetStatus(vars["tileset"]) == repository.NOT_FOUND {
+			if store.TilesetStatus(vars["tileset"]) == store.NotFound {
 				http.Error(w,
 					fmt.Errorf("the tileset `%s` does not exist", vars["tileset"]).Error(),
 					http.StatusNotFound)
@@ -57,19 +57,12 @@ func LayerHandler(store *repository.Store) func(http.ResponseWriter, *http.Reque
 }
 
 // TerrainHandler An HTTP handler which returns a terrain tile resource
-func TerrainHandler(store *repository.Store) func(http.ResponseWriter, *http.Request) {
+func TerrainHandler(store *store.Store) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			t   repository.Terrain
+			t   store.Terrain
 			err error
 		)
-
-		defer func() {
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				slog.Error(err.Error())
-			}
-		}()
 
 		// get the tile coordinate from the URL
 		vars := mux.Vars(r)
@@ -80,8 +73,8 @@ func TerrainHandler(store *repository.Store) func(http.ResponseWriter, *http.Req
 
 		// Try and get a tile from the store
 		err = store.Tile(vars["tileset"], &t)
-		if err == repository.ErrNoItem {
-			if store.TilesetStatus(vars["tileset"]) == repository.NOT_FOUND {
+		if err == store.ErrNoItem {
+			if store.TilesetStatus(vars["tileset"]) == store.NOT_FOUND {
 				err = nil
 				http.Error(w,
 					fmt.Errorf("The tileset `%s` does not exist", vars["tileset"]).Error(),

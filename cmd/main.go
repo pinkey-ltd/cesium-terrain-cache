@@ -4,8 +4,8 @@ package main
 import (
 	"context"
 	"errors"
-	handlers2 "github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/handlers"
-	"github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/repository"
+	"github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/handlers"
+	"github.com/pinkey-ltd/cesium-terrain-cache/internal/adapter/store"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,12 +14,13 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	// Get the tileset store
-	store := &repository.Store{}
+	store := &store.Store{}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/{tileset}/layer.json", handlers2.LayerHandler(store))
-	mux.HandleFunc("/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain?v={version}", handlers2.TerrainHandler(store))
+	mux.HandleFunc("/{tileset}/layer.json", handlers.LayerHandler(ctx))
+	mux.HandleFunc("/{tileset}/{z:[0-9]+}/{x:[0-9]+}/{y:[0-9]+}.terrain?v={version}", handlers.TerrainHandler(store))
 
 	srv := &http.Server{
 		Addr:    ":8080",

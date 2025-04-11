@@ -24,7 +24,7 @@ options:
 ```sh
 $ service:
   -base-terrain-url="/tilesets": base url prefix under which all tilesets are served
-  -db-limit=1.00MB: the memory size in bytes beyond which resources are not cached. Other memory units can be specified by suffixing the number with kB, MB, GB or TB
+  -repository-limit=1.00MB: the memory size in bytes beyond which resources are not cached. Other memory units can be specified by suffixing the number with kB, MB, GB or TB
   -dir=".": the root directory under which tileset directories reside
   -cacheable: (optional) enable caching tiles
   -port=8000: the port on which the server listens

@@ -1,4 +1,4 @@
-package db
+package repository
 
 import (
 	"net/http"
@@ -38,7 +38,7 @@ func (c *Cache) generateKey(r *http.Request) string {
 //	tee := handlers.MultiWriter(w, recorder)
 //	c.handler.ServeHTTP(tee, r)
 //
-//	// Only db status 200 responses.
+//	// Only repository status 200 responses.
 //	if rec.Code != 200 {
 //		return
 //	}
